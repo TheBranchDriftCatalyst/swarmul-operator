@@ -1,0 +1,13 @@
+services:
+  docker-swarm-operator:
+    image: docker-swarm-operator:latest
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - ./dist:/dist
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure

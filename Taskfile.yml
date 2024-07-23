@@ -1,0 +1,36 @@
+version: '3'
+
+vars:
+  STACK_NAME: 'swarmul_dev'
+  OUTPUT_PATH: './dist'
+
+tasks:
+  default:
+    silent: true
+    cmds:
+    - 'echo {{shellQuote .TEST}}'
+
+  build:
+    desc: "Build the Docker image"
+    cmds:
+    - docker build -t docker-swarm-operator .
+
+  build-watch:
+    desc: "Watch for changes and rebuild"
+    cmds:
+    - watchexec -r -e go,yaml --ignore node_modules --ignore .git --ignore {{.OUTPUT_PATH}} 'task build'
+
+  run:
+    desc: "Run the Docker stack"
+    cmds:
+    - docker stack deploy --with-registry-auth -c docker-stack.yml {{.STACK_NAME}}
+
+  dev:
+    desc: "Development mode (build and run in watch mode)"
+    cmds:
+    - air
+
+  stop:
+    desc: "Stop the Docker stack"
+    cmds:
+    - docker stack rm {{.STACK_NAME}}
